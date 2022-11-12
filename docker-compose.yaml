@@ -1,0 +1,39 @@
+version: '3.8'
+
+networks: 
+    mariadb-compose-network:
+      driver: bridge
+
+volumes:
+    mariadb_vol:     
+     
+services:
+  phpmyadmin:
+    image: phpmyadmin:5.2.0
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+       - PMA_ARBITRARY=1
+       - PMA_USER=root
+       - PMA_PASSWORD=mariadbpwd
+       - PMA_HOST=mariadb
+       - PMA_PORT=3306
+           
+    depends_on:
+      - mariadb
+    networks:
+      - mariadb-compose-network
+    
+  mariadb:
+    image: mariadb:10.6
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - mariadb-compose-network  
+    volumes:
+      - mariadb_vol:/data/db
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadbpwd
+      MYSQL_USER: root
